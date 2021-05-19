@@ -1,0 +1,15 @@
+[package]
+name = "time-iso8601-serde"
+description = "ISO8601 format string de/serialization for time"
+version = "0.1.0"
+authors = ["Kangwook Lee <pbzweihander@gmail.com>"]
+edition = "2018"
+homepage = "https://github.com/pbzweihander/time-iso8601-serde"
+repository = "https://github.com/pbzweihander/time-iso8601-serde"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+iso8601 = "0.4"
+serde = { version = "1.0", default-features = false }
+time = { version = "0.2", default-features = false }
