@@ -4,7 +4,7 @@ Serialize/deserialize [time](https://github.com/time-rs/time) to/from ISO8601 fo
 
 NOTE: Not published to crates.io (yet)
 
-```
+```rust
 #[derive(Deserialize, Serialize)]
 struct SomeEntity {
     #[serde(with = "time_iso8601_serde::datetime")]
