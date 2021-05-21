@@ -102,6 +102,37 @@ pub mod datetime {
             .map_err(DeError::custom)
             .and_then(|time| datetime_from_iso8601(time).map_err(DeError::custom))
     }
+
+    pub mod optional {
+        use super::*;
+
+        pub fn serialize<S>(
+            time: &Option<time::OffsetDateTime>,
+            serializer: S,
+        ) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            match time {
+                Some(time) => serializer.serialize_str(&datetime_to_iso8601(*time).to_string()),
+                None => serializer.serialize_none(),
+            }
+        }
+
+        pub fn deserialize<'de, D>(d: D) -> Result<Option<time::OffsetDateTime>, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let optional = <Option<&str>>::deserialize(d)?;
+            match optional {
+                Some(s) => iso8601::datetime(s)
+                    .map_err(DeError::custom)
+                    .and_then(|time| datetime_from_iso8601(time).map_err(DeError::custom))
+                    .map(Some),
+                None => Ok(None),
+            }
+        }
+    }
 }
 
 pub mod date {
@@ -121,6 +152,34 @@ pub mod date {
         iso8601::date(<&str>::deserialize(d)?)
             .map_err(DeError::custom)
             .and_then(|time| date_from_iso8601(time).map_err(DeError::custom))
+    }
+
+    pub mod optional {
+        use super::*;
+
+        pub fn serialize<S>(time: &Option<time::Date>, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            match time {
+                Some(time) => serializer.serialize_str(&date_to_iso8601(*time).to_string()),
+                None => serializer.serialize_none(),
+            }
+        }
+
+        pub fn deserialize<'de, D>(d: D) -> Result<Option<time::Date>, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let optional = <Option<&str>>::deserialize(d)?;
+            match optional {
+                Some(s) => iso8601::date(s)
+                    .map_err(DeError::custom)
+                    .and_then(|time| date_from_iso8601(time).map_err(DeError::custom))
+                    .map(Some),
+                None => Ok(None),
+            }
+        }
     }
 }
 
@@ -147,5 +206,38 @@ pub mod time_offset {
                 let (time, offset) = time_from_iso8601(time);
                 time.map_err(DeError::custom).map(|t| (t, offset))
             })
+    }
+
+    pub mod optional {
+        use super::*;
+
+        pub fn serialize<S>(
+            time: &Option<(time::Time, time::UtcOffset)>,
+            serializer: S,
+        ) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+        {
+            match time {
+                Some((time, offset)) => {
+                    serializer.serialize_str(&time_to_iso8601(*time, *offset).to_string())
+                }
+                None => serializer.serialize_none(),
+            }
+        }
+
+        pub fn deserialize<'de, D>(d: D) -> Result<Option<(time::Time, time::UtcOffset)>, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let optional = <Option<&str>>::deserialize(d)?;
+            match optional {
+                Some(s) => iso8601::time(s).map_err(DeError::custom).and_then(|time| {
+                    let (time, offset) = time_from_iso8601(time);
+                    time.map_err(DeError::custom).map(|t| Some((t, offset)))
+                }),
+                None => Ok(None),
+            }
+        }
     }
 }
