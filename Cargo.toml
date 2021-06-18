@@ -11,5 +11,5 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 iso8601 = "0.4"
-serde = { version = "1.0", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["alloc"] }
 time = { version = "0.2", default-features = false }
